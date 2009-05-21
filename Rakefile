@@ -8,11 +8,12 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
 
-  gem.name     = "rjab"
-  gem.summary  = %Q{A Ruby library for interacting with Jabbify.}
-  gem.email    = "matt@puchlerz.com"
-  gem.homepage = "http://github.com/mattpuchlerz/rjab"
-  gem.authors  = ["Matt Puchlerz"]
+  gem.name        = "rjab"
+  gem.summary     = %Q{A Ruby library for interacting with Jabbify.}
+  gem.description = %Q{A Ruby library for interacting with Jabbify. Simplifies the process of delivering messages to Jabbify's Comet server.}
+  gem.email       = "matt@puchlerz.com"
+  gem.homepage    = "http://github.com/mattpuchlerz/rjab"
+  gem.authors     = ["Matt Puchlerz"]
   gem.add_dependency 'adamwiggins-rest-client', '>= 0.9.2'  
 end
 
