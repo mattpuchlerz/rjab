@@ -8,7 +8,7 @@ You can [utilize their Comet service][jabbify_comet] via the Javascript API, or 
 Installing the Gem
 ------------------
 
-    $ sudo gem install mattpuchlerz-rjab
+    $ sudo gem install mattpuchlerz-rjab -s http://gems.github.com
 		
 Utilizing the Library
 ---------------------
