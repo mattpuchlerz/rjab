@@ -14,7 +14,7 @@ Utilizing the Library
 ---------------------
 
     require 'rubygems'
-    require 'jabbify/comet'
+    require 'jabbify'
 	
 For one-off message deliveries, you might find it easiest to use the class method:
 
