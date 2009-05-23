@@ -4,6 +4,10 @@ require 'restclient' # http://github.com/adamwiggins/rest-client
 module Jabbify
   class Comet
     
+    def self.deliver(options)
+      new(options).deliver
+    end
+    
     attr_accessor :action, :api_key, :message, :name, :to, :type
     
     def initialize(options = {})
@@ -44,14 +48,10 @@ module Jabbify
     end
     
     def valid?
-      %w[ api_key name message ].each do |attribute|
+      [ :api_key, :name, :message ].each do |attribute|
         return false if send(attribute).nil? 
       end
       true
-    end
-    
-    def self.deliver(options)
-      new(options).deliver
     end
     
   end
