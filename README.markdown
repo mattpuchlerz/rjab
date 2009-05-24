@@ -16,34 +16,76 @@ Utilizing the Library
     require 'rubygems'
     require 'jabbify'
 	
-For one-off message deliveries, you might find it easiest to use the class method:
+If you only make one message delivery in your app, you might find it easiest to use the class method:
 
     Jabbify::Comet.deliver(
       :api_key => 'YourApiKeyGoesHere',
-      :type    => :message,
-      :action  => :create,
+      :type    => :type_of_delivery,
+      :action  => :action_of_delivery,
       :name    => 'John Doe',
       :message => 'This is the message!',
       :to      => 'Jane Doe',
     )
 
-Or you could always instantiate an instance, and deliver when you're ready:
+More commonly, you will instantiate an instance of `Jabbify::Comet` with a few customized attributes. Then you can just call `#deliver` whenever you're ready, passing in a couple more attributes which will *only be used during the delivery*:
 
-    defaults = {
+    custom_attributes = {
       :api_key => 'YourApiKeyGoesHere',
-      :type    => :message,
-      :action  => :create,
       :name    => 'The Server'
     }
     
-    @comet = Jabbify::Comet.new defaults
-    @comet.message = "The time is now #{ Time.now }"
+    @comet = Jabbify::Comet.new(custom_attributes)
     
-    if @comet.deliver
+    if @comet.deliver(:message => "A special message at #{ Time.now.to_s }")
       # do something
     else
       # do something else
     end
+
+Default Attributes on the `Jabbify::Comet` Class
+------------------------------------------------
+
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Default Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>:action</code></td>
+      <td><code>:create</code></td>
+      <td>The action you are performing against the type, as a <strong>symbol</strong>. Commonly a RESTful action.</td>
+    </tr>
+    <tr>
+      <td><code>:api_key</code></td>
+      <td><code>nil</code></td>
+      <td>The API key provided to you when you sign up with Jabbify.</td>
+    </tr>
+    <tr>
+      <td><code>:message</code></td>
+      <td><code>nil</code></td>
+      <td>The message to deliver to the Comet server.</td>
+    </tr>
+    <tr>
+      <td><code>:name</code></td>
+      <td><code>'Server'</code></td>
+      <td>The sender of the message.</td>
+    </tr>
+    <tr>
+      <td><code>:to</code></td>
+      <td><code>nil</code></td>
+      <td>The recipient of the message. Not usually specified, as most messages are sent to all users.</td>
+    </tr>
+    <tr>
+      <td><code>:type</code></td>
+      <td><code>:message</code></td>
+      <td>The type of resource you are working with, as a <strong>symbol</strong>.</td>
+    </tr>
+  </tbody>
+</table>
 
 
 
