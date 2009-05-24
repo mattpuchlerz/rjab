@@ -15,7 +15,6 @@ module Jabbify
         
     def initialize(custom_attributes = {})
       @customized_attributes = DEFAULT_ATTRIBUTES.merge custom_attributes
-      @overridden_attributes = {}
     end
     
     def attributes
