@@ -3,34 +3,40 @@ require 'restclient' # http://github.com/adamwiggins/rest-client
 
 module Jabbify
   class Comet
+    
+    DEFAULT_ATTRIBUTES = {
+      :action  => :create,
+      :api_key => nil,
+      :message => nil,
+      :name    => 'Server',
+      :to      => nil,
+      :type    => :message,
+    }
         
     def initialize(custom_attributes = {})
-      @custom_attributes = custom_attributes
+      @customized_attributes = DEFAULT_ATTRIBUTES.merge custom_attributes
       @overridden_attributes = {}
     end
     
     def attributes
-      {
-        :action  => :create,
-        :api_key => nil,
-        :message => nil,
-        :name    => 'Server',
-        :to      => nil,
-        :type    => :message,
-      }.merge @custom_attributes
+      @customized_attributes
     end
     
     def deliver(overridden_attributes = {})
-      @overridden_attributes = overridden_attributes
+      customized_attributes = @customized_attributes.dup
+      @customized_attributes.merge! overridden_attributes
+      ret = false
       
-      return false unless valid?
-      
-      begin
-        RestClient.post jabbify_uri, uri_params
-        true
-      rescue
-        false
+      if valid?
+        begin
+          RestClient.post jabbify_uri, uri_params
+          ret = true
+        rescue
+        end
       end
+      
+      @customized_attributes = customized_attributes
+      ret
     end
     
     def self.deliver(options)
@@ -42,26 +48,24 @@ module Jabbify
     end
     
     def uri_params
-      attrs = attributes.merge @overridden_attributes
       { 
-        :action  => attrs[:action],
-        :key     => attrs[:api_key],
-        :message => attrs[:message],
-        :name    => attrs[:name],
-        :to      => attrs[:to],
-        :type    => attrs[:type],
+        :action  => @customized_attributes[:action],
+        :key     => @customized_attributes[:api_key],
+        :message => @customized_attributes[:message],
+        :name    => @customized_attributes[:name],
+        :to      => @customized_attributes[:to],
+        :type    => @customized_attributes[:type],
       }.reject { |key, value| value.nil? }
     end
     
     def valid?
-      attrs = attributes.merge @overridden_attributes
       [ :api_key, :name, :message ].each do |attribute|
-        return false if attrs[attribute].nil? or attrs[attribute].strip.length == 0
+        return false if @customized_attributes[attribute].nil? or @customized_attributes[attribute].strip.length == 0
       end
       true
     end
     
-    [ :action, :api_key, :message, :name, :to, :type ].each do |attribute|
+    DEFAULT_ATTRIBUTES.keys.each do |attribute|
       
       define_method attribute do
         attributes[attribute]
@@ -69,7 +73,7 @@ module Jabbify
       
       define_method "#{attribute}=" do |value|
         value = value.to_sym if [ :action, :type ].include? attribute
-        @custom_attributes[attribute] = value
+        @customized_attributes[attribute] = value
       end
       
     end

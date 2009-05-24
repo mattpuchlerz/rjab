@@ -20,7 +20,7 @@ describe Jabbify::Comet do
     end
     
     it "should be able to get a hash of all default attributes" do
-      @comet.attributes.should == 
+      Jabbify::Comet::DEFAULT_ATTRIBUTES.should == 
         {
           :action  => :create,
           :api_key => nil,
