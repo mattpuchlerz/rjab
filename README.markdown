@@ -65,7 +65,7 @@ Default Attributes on the `Jabbify::Comet` Class
       <td>The API key provided to you when you sign up with Jabbify.</td>
     </tr>
     <tr>
-      <td><code>:message</code></td>
+      <td><code>:message</code></td> 
       <td><code>nil</code></td>
       <td>The message to deliver to the Comet server.</td>
     </tr>
