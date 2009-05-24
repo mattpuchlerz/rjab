@@ -25,18 +25,18 @@ module Jabbify
     def deliver(overridden_attributes = {})
       customized_attributes = @customized_attributes.dup
       @customized_attributes.merge! overridden_attributes
-      ret = false
+      return_value = false
       
       if valid?
         begin
           RestClient.post jabbify_uri, uri_params
-          ret = true
+          return_value = true
         rescue
         end
       end
       
       @customized_attributes = customized_attributes
-      ret
+      return_value
     end
     
     def self.deliver(options)
