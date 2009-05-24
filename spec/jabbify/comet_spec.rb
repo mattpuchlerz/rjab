@@ -1,22 +1,39 @@
 require File.join( File.dirname(__FILE__), *%w[ .. spec_helper ] )
 
+def common_attributes(attribute_overrides = {})
+  { 
+    :action  => :i_am_the_action,
+    :api_key => 'qwer1234qwer1234',
+    :message => 'This is the message!',
+    :name    => 'John Doe',
+    :to      => 'Jane Doe',
+    :type    => :i_am_the_type,
+  }.merge(attribute_overrides)
+end
+
 describe Jabbify::Comet do
-  
-  def common_attributes(options = {})
-    { 
-      :action  => :i_am_the_action,
-      :api_key => 'qwer1234qwer1234',
-      :message => 'This is the message!',
-      :name    => 'John Doe',
-      :to      => 'Jane Doe',
-      :type    => :i_am_the_type,
-    }.merge(options)
-  end
   
   context "reading and writing attributes" do
     
     before(:each) do
       @comet = Jabbify::Comet.new
+    end
+    
+    it "should be able to get a hash of all default attributes" do
+      @comet.attributes.should == 
+        {
+          :action  => :create,
+          :api_key => nil,
+          :message => nil,
+          :name    => 'Server',
+          :to      => nil,
+          :type    => :message,
+        }
+    end
+    
+    it "should be able to get a hash of all the current attributes (customs merged into defaults)" do
+      @comet = Jabbify::Comet.new common_attributes
+      @comet.attributes.should == common_attributes
     end
     
     it "should be able to read/write an 'api_key' attribute" do
@@ -53,32 +70,6 @@ describe Jabbify::Comet do
       @comet.to.should == 'Jane Doe'
     end
     
-    it "should be able to write any attribute via a hash passed in during initialization" do
-      @comet = Jabbify::Comet.new common_attributes
-      @comet.api_key.should == 'qwer1234qwer1234'
-      @comet.type.should    == :i_am_the_type
-      @comet.action.should  == :i_am_the_action
-      @comet.name.should    == 'John Doe'
-      @comet.message.should == 'This is the message!'
-      @comet.to.should      == 'Jane Doe'
-    end
-    
-    it "should be able to get a hash of all default attributes" do
-      @comet.attributes.should == {
-        :action  => :create,
-        :api_key => nil,
-        :message => nil,
-        :name    => 'Server',
-        :to      => nil,
-        :type    => :message,
-      }
-    end
-    
-    it "should be able to get a hash of all the current attributes" do
-      @comet = Jabbify::Comet.new common_attributes
-      @comet.attributes.should == common_attributes
-    end
-    
   end
   
   context "determining the validity of the attributes" do
@@ -91,15 +82,21 @@ describe Jabbify::Comet do
     it "should not be valid if the 'api_key' attribute is blank" do
       @comet = Jabbify::Comet.new common_attributes(:api_key => nil)
       @comet.should_not be_valid
+      @comet = Jabbify::Comet.new common_attributes(:api_key => ' ')
+      @comet.should_not be_valid
     end
     
     it "should not be valid if the 'name' attribute is blank" do
       @comet = Jabbify::Comet.new common_attributes(:name => nil)
       @comet.should_not be_valid
+      @comet = Jabbify::Comet.new common_attributes(:name => ' ')
+      @comet.should_not be_valid
     end
   
     it "should not be valid if the 'message' attribute is blank" do
       @comet = Jabbify::Comet.new common_attributes(:message => nil)
+      @comet.should_not be_valid
+      @comet = Jabbify::Comet.new common_attributes(:message => ' ')
       @comet.should_not be_valid
     end
     

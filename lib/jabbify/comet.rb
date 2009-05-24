@@ -5,11 +5,10 @@ module Jabbify
   class Comet
         
     def initialize(custom_attributes = {})
-      @custom_attributes = {}
-      @custom_attributes.merge! custom_attributes
+      @custom_attributes = custom_attributes
       @overridden_attributes = {}
     end
-        
+    
     def attributes
       {
         :action  => :create,
@@ -57,7 +56,7 @@ module Jabbify
     def valid?
       attrs = attributes.merge @overridden_attributes
       [ :api_key, :name, :message ].each do |attribute|
-        return false if attrs[attribute].nil? 
+        return false if attrs[attribute].nil? or attrs[attribute].strip.length == 0
       end
       true
     end
