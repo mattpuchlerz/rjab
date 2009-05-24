@@ -2,7 +2,7 @@ require File.join( File.dirname(__FILE__), *%w[ .. spec_helper ] )
 
 describe Jabbify::Comet do
   
-  def defaults(options = {})
+  def common_attributes(options = {})
     { 
       :action  => :i_am_the_action,
       :api_key => 'qwer1234qwer1234',
@@ -25,16 +25,16 @@ describe Jabbify::Comet do
     end
     
     it "should be able to read/write a 'type' attribute as a symbol" do
-      @comet.type = :i_am_the_type
-      @comet.type.should == :i_am_the_type
       @comet.type = 'i_am_the_type'
+      @comet.type.should == :i_am_the_type
+      @comet.type = :i_am_the_type
       @comet.type.should == :i_am_the_type
     end
     
     it "should be able to read/write an 'action' attribute as a symbol" do
-      @comet.action = :i_am_the_action
-      @comet.action.should == :i_am_the_action
       @comet.action = 'i_am_the_action'
+      @comet.action.should == :i_am_the_action
+      @comet.action = :i_am_the_action
       @comet.action.should == :i_am_the_action
     end
     
@@ -54,13 +54,29 @@ describe Jabbify::Comet do
     end
     
     it "should be able to write any attribute via a hash passed in during initialization" do
-      @comet = Jabbify::Comet.new defaults
+      @comet = Jabbify::Comet.new common_attributes
       @comet.api_key.should == 'qwer1234qwer1234'
       @comet.type.should    == :i_am_the_type
       @comet.action.should  == :i_am_the_action
       @comet.name.should    == 'John Doe'
       @comet.message.should == 'This is the message!'
       @comet.to.should      == 'Jane Doe'
+    end
+    
+    it "should be able to get a hash of all default attributes" do
+      @comet.attributes.should == {
+        :action  => :create,
+        :api_key => nil,
+        :message => nil,
+        :name    => 'Server',
+        :to      => nil,
+        :type    => :message,
+      }
+    end
+    
+    it "should be able to get a hash of all the current attributes" do
+      @comet = Jabbify::Comet.new common_attributes
+      @comet.attributes.should == common_attributes
     end
     
   end
@@ -73,22 +89,22 @@ describe Jabbify::Comet do
     end
 
     it "should not be valid if the 'api_key' attribute is blank" do
-      @comet = Jabbify::Comet.new defaults(:api_key => nil)
+      @comet = Jabbify::Comet.new common_attributes(:api_key => nil)
       @comet.should_not be_valid
     end
     
     it "should not be valid if the 'name' attribute is blank" do
-      @comet = Jabbify::Comet.new defaults(:name => nil)
+      @comet = Jabbify::Comet.new common_attributes(:name => nil)
       @comet.should_not be_valid
     end
   
     it "should not be valid if the 'message' attribute is blank" do
-      @comet = Jabbify::Comet.new defaults(:message => nil)
+      @comet = Jabbify::Comet.new common_attributes(:message => nil)
       @comet.should_not be_valid
     end
     
     it "should be valid if all attributes are provided" do
-      @comet = Jabbify::Comet.new defaults
+      @comet = Jabbify::Comet.new common_attributes
       @comet.should be_valid
     end
     
@@ -102,7 +118,7 @@ describe Jabbify::Comet do
     end
     
     it "should be able to get a hash of all the needed URI parameters" do
-      @comet = Jabbify::Comet.new defaults
+      @comet = Jabbify::Comet.new common_attributes
       @comet.uri_params.should == 
         { 
           :action  => :i_am_the_action,
@@ -115,7 +131,7 @@ describe Jabbify::Comet do
     end
     
     it "should not include any URI parameters that are blank" do
-      @comet = Jabbify::Comet.new defaults(:to => nil)
+      @comet = Jabbify::Comet.new common_attributes(:to => nil)
       @comet.uri_params.should == 
         { 
           :action  => :i_am_the_action,
@@ -135,28 +151,37 @@ describe Jabbify::Comet do
       @comet.should respond_to(:deliver)
     end
     
+    it "should be able to override any attribute via a hash passed in during delivery" do
+      RestClient.should_receive(:post).and_return('body of response')
+      overridden_attributes = { :message => 'Different message', :name => 'Mr. Doe' }
+      
+      @comet = Jabbify::Comet.new common_attributes
+      @comet.deliver(overridden_attributes).should == true
+      @comet.attributes.should == common_attributes
+    end
+    
     it "should not deliver if any attributes are invalid" do
-      @comet = Jabbify::Comet.new defaults(:api_key => nil)
+      @comet = Jabbify::Comet.new common_attributes(:api_key => nil)
       @comet.deliver.should == false
     end
     
     it "should not deliver if the request fails" do
       RestClient.should_receive(:post).and_raise(RuntimeError)
-      @comet = Jabbify::Comet.new defaults
+      @comet = Jabbify::Comet.new common_attributes
       @comet.deliver.should == false
     end
     
     it "should deliver if the request succeeds" do
       RestClient.should_receive(:post).and_return('body of response')
-      @comet = Jabbify::Comet.new defaults
+      @comet = Jabbify::Comet.new common_attributes
       @comet.deliver.should == true
     end
     
     it "should be able to handle one-off deliveries via a class method" do
       comet = mock('Jabbify::Comet')
       comet.should_receive(:deliver).and_return(true)
-      Jabbify::Comet.should_receive(:new).with(defaults).and_return(comet)
-      Jabbify::Comet.deliver(defaults).should == true
+      Jabbify::Comet.should_receive(:new).with(common_attributes).and_return(comet)
+      Jabbify::Comet.deliver(common_attributes).should == true
     end
   
   end
