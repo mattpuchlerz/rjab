@@ -27,7 +27,7 @@ If you only make one message delivery in your app, you might find it easiest to 
       :to      => 'Jane Doe',
     )
 
-More commonly, you will instantiate an instance of `Jabbify::Comet` with a few customized attributes. Keep in mind that there a few [default attributes][rjab_default_attributes] set for you. Then you can just call `#deliver` whenever you're ready, passing in a couple more attributes which will *only be used during the delivery*:
+More commonly, you will instantiate an instance of `Jabbify::Comet` with a few customized attributes. Keep in mind that there a few **default attributes** set for you; they are denoted below. Then you can just call `#deliver` whenever you're ready, passing in a couple more attributes which will *only be used during the delivery*:
 
     custom_attributes = {
       :api_key => 'YourApiKeyGoesHere',
@@ -91,4 +91,3 @@ Default Attributes on the `Jabbify::Comet` Class
 
 [jabbify]: 			            http://jabbify.com
 [jabbify_comet]:            https://jabbify.com/home/comet_service
-[rjab_default_attributes]:  #rjab_default_attributes
